@@ -158,7 +158,34 @@ namespace TestXML
             return false;
         }
 
+        // Check Parant -> Child
+        private void CheckAllChildNodes(TreeNode node, bool isChecked)
+        {
+            foreach (TreeNode child in node.Nodes)
+            {
+                child.Checked = isChecked;
+                if (child.Nodes.Count > 0)
+                    CheckAllChildNodes(child, isChecked);
+            }
+        }
 
+        private void UpdateParentNode(TreeNode node)
+        {
+            if (node.Parent == null) return;
+
+            bool allChecked = node.Parent.Nodes.Cast<TreeNode>().All(n => n.Checked);
+            bool noneChecked = node.Parent.Nodes.Cast<TreeNode>().All(n => !n.Checked);
+
+            if (allChecked)
+                node.Parent.Checked = true;
+            else if (noneChecked)
+                node.Parent.Checked = false;
+            else
+                node.Parent.Checked = true; // если есть разные — родитель будет отмечен
+                                            // (можно заменить на "частичную" отметку через owner-draw)
+
+            UpdateParentNode(node.Parent);
+        }
 
         //--------------------------------------------------------------------------- HELP FORM ------------------------------------------------------------
         private void OpenDownlaodForm()
@@ -204,6 +231,26 @@ namespace TestXML
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 SaveCheckedNodesToXml(dlg.FileName);
+            }
+        }
+
+        private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            // отключаем временно событие, чтобы избежать рекурсии
+            treeView1.AfterCheck -= treeView1_AfterCheck;
+
+            try
+            {
+                // Ставим галочки у всех дочерних узлов
+                CheckAllChildNodes(e.Node, e.Node.Checked);
+
+                // Обновляем состояние родителя (если все дети выбраны — выбрать родителя)
+                UpdateParentNode(e.Node);
+            }
+            finally
+            {
+                // возвращаем событие обратно
+                treeView1.AfterCheck += treeView1_AfterCheck;
             }
         }
     }

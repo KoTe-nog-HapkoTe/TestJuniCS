@@ -67,6 +67,7 @@
             treeView1.Name = "treeView1";
             treeView1.Size = new Size(433, 416);
             treeView1.TabIndex = 3;
+            treeView1.AfterCheck += treeView1_AfterCheck;
             treeView1.AfterSelect += treeView1_AfterSelect;
             // 
             // richTextBox1
