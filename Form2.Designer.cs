@@ -60,7 +60,7 @@
             ClientSize = new Size(1066, 521);
             Controls.Add(panel1);
             Name = "Form2";
-            Text = "Form2";
+            Text = "HELP";
             Load += Form2_Load;
             panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
